@@ -1,0 +1,13 @@
+20K Rows Model             
+
+22063 ROWS MODEL VALIDATION
+
+MAE: 5.34
+
+RMSE: 9.00
+
+R² Score: 0.7617
+
+MODEL QUALITY
+
+Good Model
