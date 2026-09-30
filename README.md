@@ -1,177 +1,526 @@
-# 🚆 RailTrack AI — Railway Delay Prediction
+TrainTrace 🚆
 
-A full-stack web application that tracks Indian trains in real time and predicts arrival delays at future stations using a trained XGBoost machine learning model.
+Live Tracking • AI ETA Prediction
 
-![Tech Stack](https://img.shields.io/badge/React-19-blue?style=flat-square&logo=react)
-![Tech Stack](https://img.shields.io/badge/Express-5-green?style=flat-square&logo=express)
-![Tech Stack](https://img.shields.io/badge/XGBoost-ML-orange?style=flat-square)
-![Tech Stack](https://img.shields.io/badge/Python-3.10+-yellow?style=flat-square&logo=python)
+TrainTrace is an AI-powered railway monitoring and ETA forecasting
+system designed to provide live train information, station-level delay
+prediction, and dynamic future ETA estimation.
 
----
+The system combines live railway data from the RailRadar API with an
+XGBoost delay-delta model to estimate how a train’s delay may evolve
+across upcoming stations.
 
-## Features
+🚀 Key Features
 
-- **Live train tracking** via the RailRadar API
-- **AI delay prediction** for future stations using XGBoost
-- **Station-by-station timeline** showing scheduled, actual, and predicted times
-- **Delay trend chart** visualising actual vs predicted delay across the route
-- **Destination ETA** with current delay context
-- **Station autocomplete** for route search
+Live Train Search — Search trains between two railway stations
+using live railway data.
 
----
+Station Autocomplete — Search by station code or station name.
 
-## Architecture
+Live Train Tracking — View train number, name, route, and journey
+date.
 
-```
-┌─────────────────┐       ┌──────────────────────┐       ┌──────────────────┐
-│  React Frontend │──────▶│  Express.js Backend  │──────▶│  RailRadar API   │
-│  (Vite + TW)    │◀──────│  (Node.js / port 5000│       │  (live data)     │
-└─────────────────┘       └──────────┬───────────┘       └──────────────────┘
-                                     │
-                                     ▼
-                          ┌──────────────────────┐
-                          │  Python (XGBoost)        │
-                          │  predict_xgb.py          │
-                          │  best_model_v1.pkl.      │
-                          └──────────────────────┘
-```
+AI Delay Prediction — XGBoost regression predicts future delay
+changes.
 
----
+Dynamic ETA Forecasting — Converts predicted delay into expected
+station arrival times.
 
-## ML Model
+Interactive Station Timeline — Horizontally scroll through
+stations without scrolling the whole page.
 
-| Metric | Value |
-|--------|-------|
-| Algorithm | XGBoost Regressor |
-| Training rows | ~22,000 |
-| MAE | 5.34 min |
-| RMSE | 9.00 min |
-| R² Score | 0.76 |
+Station Search — Search for a station and jump directly to its
+prediction.
 
-**Target**: Delay delta at next station (minutes ahead/behind predicted).
+Delay Trend Analysis — Compare available live/actual delay
+information with AI predictions.
 
-**Key features**: `prev_delay_arrival`, `sequence`, `scheduled_hour`, `inter_station_scheduled_mins`, `dwell_time_scheduled_mins`, `day_of_week`, `platform_num`
+Prediction Confidence — Displays the current prototype confidence
+indicator.
 
----
+🧠 How It Works
 
-## Getting Started
+User Search
+    ↓
+React / Vite Frontend
+    ↓
+Node.js + Express Backend
+    ↓
+RailRadar Live API
+    ↓
+Live Route + Station Data
+    ↓
+Python XGBoost Prediction Engine
+    ↓
+Future Delay Delta
+    ↓
+Sequential ETA Forecast
+    ↓
+TrainTrace Dashboard
 
-### Prerequisites
+🏗️ System Architecture
 
-- Node.js ≥ 20
-- Python ≥ 3.10
-- pip packages: `xgboost`, `scikit-learn`, `pandas`, `joblib`
+┌─────────────────────────────┐
+│       TrainTrace UI         │
+│     React + Vite + Tailwind │
+└──────────────┬──────────────┘
+               │ REST
+               ▼
+┌─────────────────────────────┐
+│    Node.js / Express API    │
+└───────────┬─────────┬───────┘
+            │         │
+            ▼         ▼
+    ┌────────────┐  ┌────────────────┐
+    │ RailRadar  │  │ Python Engine  │
+    │ Live API   │  │ XGBoost Model  │
+    └─────┬──────┘  └───────┬────────┘
+          │                  │
+          └────────┬─────────┘
+                   ▼
+        ┌──────────────────────┐
+        │ Station ETA Forecast │
+        │ + Destination ETA    │
+        └──────────────────────┘
 
-### 1. Clone the repo
+🛠️ Technology Stack
 
-```bash
-git clone https://github.com/AniketSonar/RAILWAY-DELAY-PREDICTION.git
-cd RAILWAY-DELAY-PREDICTION
-```
+Frontend
 
-### 2. Backend setup
+React
 
-```bash
+Vite
+
+Tailwind CSS
+
+React Router
+
+Axios
+
+Recharts
+
+Lucide React
+
+Backend
+
+Node.js
+
+Express.js
+
+Axios
+
+CORS
+
+dotenv
+
+AI / Machine Learning
+
+Python
+
+XGBoost
+
+Pandas / Polars
+
+NumPy
+
+scikit-learn
+
+Joblib
+
+Data
+
+RailRadar API for live railway information
+
+Indian Railways delay dataset for model training
+
+🤖 Machine Learning
+
+TrainTrace uses an XGBoost regression model to predict the change in
+delay between consecutive stations.
+
+Target
+
+target_delay_delta =
+next_station_delay - current_station_delay
+
+The predicted delay is propagated sequentially:
+
+next_delay =
+current_delay + predicted_delay_delta
+
+Then:
+
+predicted_ETA =
+scheduled_time + predicted_delay
+
+Current V2 Features
+
+Feature
+
+Description
+
+station_no
+
+Sequential station position
+
+is_origin
+
+Whether the station is the journey origin
+
+is_destination
+
+Whether the station is the destination
+
+day_of_week
+
+Day of the week
+
+prev_delay_arrival
+
+Previous delay
+
+delay_trend
+
+Recent delay movement
+
+journey_max_delay_so_far
+
+Maximum delay observed so far
+
+journey_avg_delay_so_far
+
+Average delay observed so far
+
+📊 Dataset
+
+The training dataset is not included in this repository because
+combined_delay.csv is approximately 970 MB, which exceeds GitHub’s
+normal 100 MB file limit.
+
+Expected local structure:
+
+Railway_dataset/
+└── combined_delay.csv
+
+The dataset used during development contains approximately:
+
+38.4 million rows
+
+7,000+ unique trains
+
+121 station positions
+
+Data covering February 2025 to February 2026
+
+The CSV is intentionally excluded from Git using .gitignore.
+
+📈 Model Training
+
+Training script:
+
+backend/train_model_v2.py
+
+Pipeline:
+
+Raw Dataset
+    ↓
+Remove Missing Delays
+    ↓
+Sort by Train / Date / Station
+    ↓
+Create Next-Station Delay
+    ↓
+Calculate Delay Delta
+    ↓
+Generate Journey Features
+    ↓
+Train XGBoost
+    ↓
+Save Model
+
+Model artifact:
+
+backend/models/best_model_v1.pkl
+
+Development-time training metrics should not be treated as independent
+validation performance. Final benchmarking should use a chronological
+hold-out evaluation.
+
+📁 Project Structure
+
+TrainTrace/
+│
+├── backend/
+│   ├── server.js
+│   ├── predict_xgb.py
+│   ├── predict.py
+│   ├── predict_future_stations.py
+│   ├── train_delay_delta_model.py
+│   ├── train_model_v2.py
+│   ├── validate_model.py
+│   ├── package.json
+│   └── models/
+│       └── best_model_v1.pkl
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Header.jsx
+│   │   │   ├── TrainCard.jsx
+│   │   │   ├── LiveStationTimeline.jsx
+│   │   │   ├── DelayTrendChart.jsx
+│   │   │   └── PredictionConfidence.jsx
+│   │   ├── pages/
+│   │   │   ├── Home.jsx
+│   │   │   └── TrainDetails.jsx
+│   │   └── ...
+│   ├── package.json
+│   └── vite.config.js
+│
+├── Railway_dataset/
+│   └── combined_delay.csv
+│
+├── .gitignore
+└── README.md
+
+⚙️ Installation
+
+1. Clone
+
+git clone https://github.com/Mehul2769/TrainTrace.git
+cd TrainTrace
+
+2. Backend
+
 cd backend
 npm install
 
-# Set up environment variables
-cp .env.example .env
-# Edit .env and add your RAILRADAR_API_KEY
+Install Python dependencies:
 
-# Install Python dependencies
-pip install xgboost scikit-learn pandas joblib
+pip install pandas numpy scikit-learn xgboost joblib
 
-# Place your trained model at:
-# backend/models/best_model_v1.pkl
+If using the V2 training pipeline:
 
-npm start
-```
+pip install polars pyarrow
 
-### 3. Frontend setup
+3. API Key
 
-```bash
+Create:
+
+backend/.env
+
+Add:
+
+RAILRADAR_API_KEY=YOUR_API_KEY
+
+Never commit .env.
+
+4. Start Backend
+
+From backend:
+
+node server.js
+
+Backend:
+
+http://localhost:5000
+
+5. Frontend
+
+Open another terminal:
+
 cd frontend
 npm install
 
-# Optional: set custom API URL
-cp .env.example .env
+Create frontend/.env if required:
+
+VITE_API_URL=http://localhost:5000
+
+Start:
 
 npm run dev
-```
 
-The app runs at **http://localhost:5173**
+Normally:
 
----
+http://localhost:5173
 
-## Project Structure
+🔌 API Endpoints
 
-```
-RAILWAY-DELAY-PREDICTION/
-├── backend/
-│   ├── server.js               # Express API server
-│   ├── predict_xgb.py          # Python prediction script
-│   ├── train_delay_delta_model.py  # Model training script
-│   ├── validate_model.py       # Model validation
-│   ├── models/
-│   │   └── best_model_v1.pkl   # Trained XGBoost model (not in repo)
-│   └── .env.example
-├── frontend/
-│   ├── src/
-│   │   ├── pages/
-│   │   │   ├── Home.jsx        # Train search
-│   │   │   └── TrainDetails.jsx # Prediction results
-│   │   └── components/
-│   │       ├── Header.jsx
-│   │       ├── TrainCard.jsx
-│   │       ├── LiveStationTimeline.jsx
-│   │       └── DelayTrendChart.jsx
-│   └── .env.example
-└── validate.txt                # Latest model metrics
-```
+Search Stations
 
----
+GET /search-stations?query=NDLS
 
-## Environment Variables
+Search Trains
 
-### Backend (`backend/.env`)
+POST /search-trains
 
-| Variable | Description |
-|----------|-------------|
-| `PORT` | Server port (default: 5000) |
-| `RAILRADAR_API_KEY` | Your RailRadar API key |
+Example:
 
-### Frontend (`frontend/.env`)
+{
+  "from": "NDLS",
+  "to": "CNB",
+  "date": "2026-09-30"
+}
 
-| Variable | Description |
-|----------|-------------|
-| `VITE_API_URL` | Backend URL (default: http://localhost:5000) |
+Future Station Prediction
 
----
+POST /predict-future-stations
 
-## API Endpoints
+Example:
 
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/search-trains` | Find trains between two stations |
-| POST | `/predict-future-stations` | Get live + predicted timeline |
-| GET | `/search-stations?query=` | Autocomplete station search |
+{
+  "trainNumber": "22436",
+  "journeyDate": "2026-09-30",
+  "from": "NDLS",
+  "to": "CNB",
+  "searchMode": "stations"
+}
 
----
+🖥️ User Flow
 
-## Training Your Own Model
+Open TrainTrace
+      ↓
+Enter FROM / TO
+      ↓
+Select Journey Date
+      ↓
+Search Trains
+      ↓
+Select Train
+      ↓
+Fetch Live Route
+      ↓
+Run AI Delay Forecast
+      ↓
+View Interactive Station Timeline
+      ↓
+Search / Select Station
+      ↓
+View Scheduled / Actual / Predicted Time
+      ↓
+View Destination ETA
 
-```bash
-cd backend
+📊 Dashboard
 
-# Make sure railway_ml_data.csv is present
-python train_delay_delta_model.py
+TrainTrace provides:
 
-# Validate the model
-python validate_model.py
+Train number and train name
 
-# Move model to correct location
-mv delay_delta_xgb_model.pkl models/best_model_v1.pkl
-```
+Origin and destination
 
----
+Journey date
+
+AI prediction confidence
+
+Station-by-station ETA
+
+Scheduled time
+
+Actual time when available
+
+AI predicted time
+
+Expected delay
+
+Interactive station navigation
+
+Delay trend visualization
+
+Destination ETA
+
+🔐 Security
+
+Never commit:
+
+.env
+API keys
+Large datasets
+Private credentials
+Temporary files
+
+The large training CSV is excluded from Git.
+
+⚠️ Current Limitations
+
+Prediction quality depends on historical data quality and coverage.
+
+The V2 training dataset does not contain every operational feature
+that could affect train movement.
+
+The current model uses derived journey-state features.
+
+Prediction confidence is currently a prototype heuristic, not a
+statistically calibrated probability.
+
+Live information depends on the external RailRadar API.
+
+Final model benchmarking should use chronological hold-out data.
+
+Sequential prediction can accumulate errors across many future
+stations.
+
+🔮 Future Improvements
+
+Chronological train-level validation
+
+Better temporal forecasting models
+
+Weather integration
+
+Railway congestion features
+
+Station dwell-time modeling
+
+Train-specific historical patterns
+
+Holiday and special-event effects
+
+Track congestion indicators
+
+Calibrated prediction intervals
+
+Automatic real-time prediction refresh
+
+ETA alerts
+
+Mobile/PWA support
+
+Model monitoring and drift detection
+
+🏆 Project Goal
+
+TrainTrace aims to go beyond simply reporting that a train is late.
+
+The system combines:
+
+Live Train State
+      +
+Historical Delay Patterns
+      +
+Journey State
+      +
+AI Delay Forecast
+      ↓
+Station-Level ETA
+      ↓
+Destination ETA
+
+The goal is to provide a dynamic view of how a train’s delay may evolve
+throughout its journey.
+
+👨‍💻 Project
+
+TrainTrace
+
+Live Tracking • AI ETA Prediction
+
+Developed as an AI/ML railway forecasting project for the Smart India
+Hackathon.
+
+📄 License
+
+This project is intended for educational, research, and hackathon
+development.
+
+Review the licenses and terms of external APIs, datasets, libraries, and
+data sources before redistribution or commercial deployment.
